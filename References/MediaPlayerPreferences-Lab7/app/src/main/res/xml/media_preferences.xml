@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="Song Order Preferences" >
+		<CheckBoxPreference
+			android:title="Shuffle"
+			android:key="@string/mp_shuffle_pref"
+			android:summary="play songs in random order"
+			android:defaultValue="false" />
+		<CheckBoxPreference
+			android:title="Album Artwork"
+			android:key="@string/mp_album_artwork_pref"
+			android:summary="Show Album Artwork"
+			android:defaultValue="true" />
+		<ListPreference
+			android:title="AudioType"
+			android:key="@string/mp_audio_pref"
+			android:summary="Choose an audio type"
+			android:defaultValue="@string/music"
+			android:entries="@array/AudioTypes"
+			android:entryValues="@array/AudioTypes"/>
+	</PreferenceCategory>
+</PreferenceScreen>

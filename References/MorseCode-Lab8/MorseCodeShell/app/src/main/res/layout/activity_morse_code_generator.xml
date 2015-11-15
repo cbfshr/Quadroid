@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent"
+	android:id="@+id/relativeLayout1" 
+	android:layout_height="fill_parent"
+	android:layout_weight="0.72" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Morse Code Message"
+        android:id="@+id/morseCodeButton"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="blinkLED"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/morseCodeMessage"
+        android:layout_above="@+id/morseCodeButton"
+        android:layout_centerHorizontal="true"/>
+
+
+</RelativeLayout>

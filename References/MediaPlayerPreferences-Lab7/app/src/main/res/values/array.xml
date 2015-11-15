@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="AudioTypes">
+		<item>any</item>
+		<item>music</item>
+		<item>alarm</item>
+		<item>notification</item>
+		<item>ringtone</item>
+	</string-array>
+</resources>
