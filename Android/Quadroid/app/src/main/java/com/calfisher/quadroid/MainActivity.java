@@ -1,24 +1,26 @@
 package com.calfisher.quadroid;
 
-import android.app.Activity;
+import android.gesture.GestureOverlayView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity
+		extends AppCompatActivity
 		implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/**
@@ -41,30 +43,43 @@ public class MainActivity extends AppCompatActivity
 		mTitle = getTitle();
 
 		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(
-				R.id.navigation_drawer,
-				(DrawerLayout) findViewById(R.id.drawer_layout));
+		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 	}
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		fragmentManager.beginTransaction()
-				.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-				.commit();
+
+		switch(position) {
+			case(0):
+				fragmentManager.beginTransaction()
+						.replace(R.id.container, StandardControlFragment.newInstance(position + 1))
+						.commit();
+				break;
+			case(1):
+				fragmentManager.beginTransaction()
+						.replace(R.id.container, AccelerometerControlFragment.newInstance(position + 1))
+						.commit();
+				break;
+			case(2):
+				fragmentManager.beginTransaction()
+						.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+						.commit();
+				break;
+		}
 	}
 
 	public void onSectionAttached(int number) {
 		switch (number) {
 			case 1:
-				mTitle = getString(R.string.title_section1);
+				mTitle = "Quadroid - " +getString(R.string.title_controls_standard);
 				break;
 			case 2:
-				mTitle = getString(R.string.title_section2);
+				mTitle = "Quadroid - " +getString(R.string.title_controls_accelerometer);
 				break;
 			case 3:
-				mTitle = getString(R.string.title_section3);
+				mTitle = "Quadroid - " +getString(R.string.title_about);
 				break;
 		}
 	}
@@ -131,18 +146,15 @@ public class MainActivity extends AppCompatActivity
 		}
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-								 Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_about, container, false);
 			return rootView;
 		}
 
 		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			((MainActivity) activity).onSectionAttached(
-					getArguments().getInt(ARG_SECTION_NUMBER));
+		public void onAttach(Context context) {
+			super.onAttach(context);
+			((MainActivity) getActivity()).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 		}
 	}
-
 }

@@ -1,9 +1,13 @@
 <resources>
 	<string name="app_name">Quadroid</string>
 
-	<string name="title_section1">Section 1</string>
-	<string name="title_section2">Section 2</string>
-	<string name="title_section3">Section 3</string>
+	<string name="title_controls_standard">Standard Control</string>
+	<string name="title_controls_accelerometer">Accelerometer Control</string>
+	<string name="title_about">How does it work?</string>
+
+	<string name="text_standard_control">Standard Control</string>
+	<string name="text_accelerometer_control">Accelerometer Control</string>
+
 
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
@@ -11,4 +15,10 @@
 	<string name="action_example">Example action</string>
 
 	<string name="action_settings">Settings</string>
+	<string name="title_activity_test">TestActivity</string>
+
+	<string name="hello_world">Hello world!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+	<string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

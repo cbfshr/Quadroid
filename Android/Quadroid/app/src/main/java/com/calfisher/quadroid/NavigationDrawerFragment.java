@@ -1,5 +1,6 @@
 package com.calfisher.quadroid;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
@@ -102,9 +103,9 @@ public class NavigationDrawerFragment extends Fragment {
 				android.R.layout.simple_list_item_1,
 				android.R.id.text1,
 				new String[]{
-						getString(R.string.title_section1),
-						getString(R.string.title_section2),
-						getString(R.string.title_section3),
+						getString(R.string.title_controls_standard),
+						getString(R.string.title_controls_accelerometer),
+						getString(R.string.title_about),
 				}));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 		return mDrawerListView;
@@ -202,10 +203,10 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+	public void onAttach(Context context) {
+		super.onAttach(context);
 		try {
-			mCallbacks = (NavigationDrawerCallbacks) activity;
+			mCallbacks = (NavigationDrawerCallbacks) getActivity();
 		} catch (ClassCastException e) {
 			throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
 		}
