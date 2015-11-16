@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
@@ -8,10 +8,54 @@
 			 android:paddingBottom="@dimen/activity_vertical_margin"
 			 tools:context="com.calfisher.quadroid.StandardControlFragment">
 
-	<!-- TODO: Update blank fragment layout -->
 	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:id="@+id/id_standard_control"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:text="@string/text_standard_control"/>
 
-</FrameLayout>
+	<TextView
+		android:id="@+id/standard_control_touch_position"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/id_standard_control"
+		android:text="Touch the screen!"/>
+
+	<LinearLayout
+		android:id="@+id/joysticks"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_centerVertical="true">
+		<ImageView
+			android:id="@+id/left_joystick"
+			android:src="@drawable/circle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"/>
+
+		<ImageView
+			android:id="@+id/right_joystick"
+			android:src="@drawable/circle"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"/>
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/joysticks">
+		<TextView
+			android:id="@+id/left_joystick_position"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:layout_gravity="center_horizontal"/>
+		<TextView
+			android:id="@+id/right_joystick_position"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:layout_gravity="center_horizontal"/>
+	</LinearLayout>
+
+</RelativeLayout>
