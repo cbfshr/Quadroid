@@ -106,9 +106,8 @@ public class StandardControlFragment extends Fragment {
 		return fragment;
 	}
 
-	public StandardControlFragment() {
-		// Required empty public constructor
-	}
+	// Required empty public constructor
+	public StandardControlFragment() { }
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -134,14 +133,11 @@ public class StandardControlFragment extends Fragment {
 		leftJoystickValue = (TextView)view.findViewById(R.id.left_joystick_value);
 		rightJoystickValue = (TextView)view.findViewById(R.id.right_joystick_value);
 
-
 		leftJoystick = (ImageView)view.findViewById(R.id.left_joystick);
 		rightJoystick = (ImageView)view.findViewById(R.id.right_joystick);
 
 		leftJoystickIndicator = (ImageView)view.findViewById(R.id.left_joystick_indicator);
 		rightJoystickIndicator = (ImageView)view.findViewById(R.id.right_joystick_indicator);
-
-		//initializeJoystickPositions();
 
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -149,53 +145,12 @@ public class StandardControlFragment extends Fragment {
 				int pointerCount = event.getPointerCount();
 				int maskedAction = event.getActionMasked();
 
-				if (maskedAction == MotionEvent.ACTION_UP || maskedAction == MotionEvent.ACTION_POINTER_DOWN) {
-					//standardControlTouchPosition.setText("Touch the screen!");
-					// Reset the left and right joysticks to where they automatically go
-					// Left joystick: Center X, No Change Y
-					leftJoystickPositionX = leftJoystickLeft + leftJoystick.getWidth() / 2;
-
-					leftJoystickPosition.setText(String.format("%f, %f", leftJoystickPositionX, leftJoystickPositionY));
-					RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) leftJoystickIndicator.getLayoutParams();
-					lp.setMargins(
-							(int) leftJoystickPositionX - (leftJoystickIndicator.getWidth() / 2),
-							(int) leftJoystickPositionY - (leftJoystickIndicator.getWidth() / 2),
-							0,
-							0
-					);
-					leftJoystickIndicator.setLayoutParams(lp);
-					leftJoystickValue.setText(String.format(
-							"(%f, %f)",
-							1 - (leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth(),
-							1 - (leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight()
-					));
-
-					// Right Joystick: Center X, Center Y
-					rightJoystickPositionX = rightJoystickLeft + rightJoystick.getWidth() / 2;
-					rightJoystickPositionY = rightJoystickTop + rightJoystick.getWidth() / 2;
-
-					rightJoystickPosition.setText(String.format("%f, %f", rightJoystickPositionX, rightJoystickPositionY));
-					lp = (android.widget.RelativeLayout.LayoutParams) rightJoystickIndicator.getLayoutParams();
-					lp.setMargins(
-							(int) rightJoystickPositionX - (rightJoystickIndicator.getWidth() / 2),
-							(int) rightJoystickPositionY - (rightJoystickIndicator.getWidth() / 2),
-							0,
-							0
-					);
-					rightJoystickIndicator.setLayoutParams(lp);
-					rightJoystickValue.setText(String.format(
-							"(%f, %f)",
-							1 - (rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth(),
-							1 - (rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight()
-					));
+				if ((maskedAction == MotionEvent.ACTION_UP ||
+						maskedAction == MotionEvent.ACTION_POINTER_UP)) {
+					resetLeftJoystickPosition(false);
+					resetRightJoystickPosition();
 				} else {
-					leftJoystick.getLocationOnScreen(leftJoystickCoordinates);
-					leftJoystickLeft = leftJoystickCoordinates[0];    // X coordinate
-					leftJoystickTop = leftJoystickCoordinates[1] - calculateActivityTop();        // Y coordinate
-
-					rightJoystick.getLocationOnScreen(rightJoystickCoordinates);
-					rightJoystickLeft = rightJoystickCoordinates[0];    // X coordinate
-					rightJoystickTop = rightJoystickCoordinates[1] - calculateActivityTop();        // Y coordinate
+					getJoystickPositions();
 
 					for (int i = 0; i < pointerCount && i < MAX_TOUCHES; i++) {
 						xTouchPosition[i] = MotionEventCompat.getX(event, i);
@@ -242,24 +197,7 @@ public class StandardControlFragment extends Fragment {
 								1 - (leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight()
 						));
 					} else {
-						// Reset the left and right joysticks to where they automatically go
-						// Left joystick: Center X, No Change Y
-						leftJoystickPositionX = leftJoystickLeft + leftJoystick.getWidth() / 2;
-
-						leftJoystickPosition.setText(String.format("%f, %f", leftJoystickPositionX, leftJoystickPositionY));
-						RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) leftJoystickIndicator.getLayoutParams();
-						lp.setMargins(
-								(int) leftJoystickPositionX - (leftJoystickIndicator.getWidth() / 2),
-								(int) leftJoystickPositionY - (leftJoystickIndicator.getWidth() / 2),
-								0,
-								0
-						);
-						leftJoystickIndicator.setLayoutParams(lp);
-						leftJoystickValue.setText(String.format(
-								"(%f, %f)",
-								1 - (leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth(),
-								1 - (leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight()
-						));
+						resetLeftJoystickPosition(false);
 					}
 
 					if (rightJoystickPositionSet == true) {
@@ -278,24 +216,7 @@ public class StandardControlFragment extends Fragment {
 								1 - (rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight()
 						));
 					} else {
-						// Right Joystick: Center X, Center Y
-						rightJoystickPositionX = rightJoystickLeft + rightJoystick.getWidth() / 2;
-						rightJoystickPositionY = rightJoystickTop + rightJoystick.getWidth() / 2;
-
-						rightJoystickPosition.setText(String.format("%f, %f", rightJoystickPositionX, rightJoystickPositionY));
-						RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) rightJoystickIndicator.getLayoutParams();
-						lp.setMargins(
-								(int) rightJoystickPositionX - (rightJoystickIndicator.getWidth() / 2),
-								(int) rightJoystickPositionY - (rightJoystickIndicator.getWidth() / 2),
-								0,
-								0
-						);
-						rightJoystickIndicator.setLayoutParams(lp);
-						rightJoystickValue.setText(String.format(
-								"(%f, %f)",
-								1 - (rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth(),
-								1 - (rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight()
-						));
+						resetRightJoystickPosition();
 					}
 
 					leftJoystickPositionSet = false;
@@ -315,10 +236,66 @@ public class StandardControlFragment extends Fragment {
 		return view;
 	}
 
+	// Left joystick: Center X, No Change Y
+	// If resetPositionY is true, then the Y value (thrust) will be reset to 0
+	private void resetLeftJoystickPosition(boolean resetPositionY) {
+		leftJoystickPositionX = leftJoystickLeft + leftJoystick.getWidth() / 2;
+		if(resetPositionY) {
+			leftJoystickPositionY = leftJoystickTop + leftJoystick.getHeight();
+		}
+
+		leftJoystickPosition.setText(String.format("%f, %f", leftJoystickPositionX, leftJoystickPositionY));
+		RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) leftJoystickIndicator.getLayoutParams();
+		lp.setMargins(
+				(int) leftJoystickPositionX - (leftJoystickIndicator.getWidth() / 2),
+				(int) leftJoystickPositionY - (leftJoystickIndicator.getWidth() / 2),
+				0,
+				0
+		);
+		leftJoystickIndicator.setLayoutParams(lp);
+		leftJoystickValue.setText(String.format(
+				"(%f, %f)",
+				1 - (leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth(),
+				1 - (leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight()
+		));
+	}
+
+	// Right Joystick: Center X, Center Y
+	private void resetRightJoystickPosition() {
+		rightJoystickPositionX = rightJoystickLeft + rightJoystick.getWidth() / 2;
+		rightJoystickPositionY = rightJoystickTop + rightJoystick.getWidth() / 2;
+
+		rightJoystickPosition.setText(String.format("%f, %f", rightJoystickPositionX, rightJoystickPositionY));
+		RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) rightJoystickIndicator.getLayoutParams();
+		lp.setMargins(
+				(int) rightJoystickPositionX - (rightJoystickIndicator.getWidth() / 2),
+				(int) rightJoystickPositionY - (rightJoystickIndicator.getWidth() / 2),
+				0,
+				0
+		);
+		rightJoystickIndicator.setLayoutParams(lp);
+		rightJoystickValue.setText(String.format(
+				"(%f, %f)",
+				1 - (rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth(),
+				1 - (rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight()
+		));
+	}
+
+	private void getJoystickPositions() {
+		leftJoystick.getLocationOnScreen(leftJoystickCoordinates);
+		leftJoystickLeft = leftJoystickCoordinates[0];								// X coordinate
+		leftJoystickTop = leftJoystickCoordinates[1] - calculateActivityTop();		// Y coordinate
+
+		rightJoystick.getLocationOnScreen(rightJoystickCoordinates);
+		rightJoystickLeft = rightJoystickCoordinates[0];							// X coordinate
+		rightJoystickTop = rightJoystickCoordinates[1] - calculateActivityTop();	// Y coordinate
+	}
+
+	// Sends the joystick values in the form of a byte array to the Arduino.
+	// The values are between 0-100 (Ratio value * 100)
 	private void sendControlValues(int a, int b, int c, int d) {
 		byte[] signal = new byte[6];
 		signal[0] = (byte)a;
-		//signal[0] = (byte)50;
 		signal[1] = (byte)b;
 		signal[2] = (byte)c;
 		signal[3] = (byte)d;
@@ -348,8 +325,6 @@ public class StandardControlFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		initializeJoystickPositions();
 
 		/*try {
 			mListener = (OnFragmentInteractionListener) getActivity();
@@ -451,44 +426,6 @@ public class StandardControlFragment extends Fragment {
 			mFileDescriptor = null;
 			mAccessory = null;
 		}
-	}
-
-	// This doesn't work? Is the view not ready for this yet?
-	private void initializeJoystickPositions() {
-		leftJoystick.getLocationOnScreen(leftJoystickCoordinates);
-		leftJoystickLeft = leftJoystickCoordinates[0];	// X coordinate
-		leftJoystickTop = leftJoystickCoordinates[1] - calculateActivityTop();		// Y coordinate
-
-		rightJoystick.getLocationOnScreen(rightJoystickCoordinates);
-		rightJoystickLeft = rightJoystickCoordinates[0];	// X coordinate
-		rightJoystickTop = rightJoystickCoordinates[1] - calculateActivityTop();		// Y coordinate
-
-		leftJoystickPositionX = leftJoystickLeft + leftJoystick.getWidth() / 2;
-		leftJoystickPositionY = leftJoystickTop + leftJoystick.getHeight();
-
-		leftJoystickPosition.setText(String.format("%f, %f", leftJoystickPositionX, leftJoystickPositionY));
-		RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) leftJoystickIndicator.getLayoutParams();
-		lp.setMargins(
-				(int) leftJoystickPositionX - (leftJoystickIndicator.getWidth() / 2),
-				(int) leftJoystickPositionY - (leftJoystickIndicator.getWidth() / 2),
-				0,
-				0
-		);
-		leftJoystickIndicator.setLayoutParams(lp);
-
-		// Right Joystick: Center X, Center Y
-		rightJoystickPositionX = rightJoystickLeft + rightJoystick.getWidth() / 2;
-		rightJoystickPositionY = rightJoystickTop + rightJoystick.getWidth() / 2;
-
-		rightJoystickPosition.setText(String.format("%f, %f", rightJoystickPositionX, rightJoystickPositionY));
-		lp = (android.widget.RelativeLayout.LayoutParams) rightJoystickIndicator.getLayoutParams();
-		lp.setMargins(
-				(int) rightJoystickPositionX - (rightJoystickIndicator.getWidth() / 2),
-				(int) rightJoystickPositionY - (rightJoystickIndicator.getWidth() / 2),
-				0,
-				0
-		);
-		rightJoystickIndicator.setLayoutParams(lp);
 	}
 
 	/*

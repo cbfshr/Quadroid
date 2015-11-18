@@ -53,6 +53,9 @@ void startupProtocol() {
 
 void loop() {
   byte msg[6];
+  int thrust = 0;
+  int yaw = 0;
+  int roll = 0;
   int pitch = 0;
 
   //msg[0] - yaw
@@ -72,31 +75,100 @@ void loop() {
       }
 
       // YAW
-      if((int)msg[0] < 35 || (int)msg[0] > 65) {
-        analogWrite(YAW_OUTPUT_PIN, (((int)msg[0] *MAX_OUTPUT_PWM)) / 100);
+      Serial.print((int)msg[0]);
+      Serial.print('\n');
+      if((int)msg[0] < 35) {
+        analogWrite(YAW_OUTPUT_PIN, 3);
+      } else if((int)msg[0] > 65) {
+        analogWrite(YAW_OUTPUT_PIN, 255);        
       } else {
-        analogWrite(YAW_OUTPUT_PIN, 30);
+        analogWrite(YAW_OUTPUT_PIN, 40);
       }
 
       // ROLL
-      if((int)msg[2] > 40 && (int)msg[2] < 60) {
+      roll = normalizeRoll((int)msg[2]);
+      analogWrite(ROLL_OUTPUT_PIN, roll);
+      /*if((int)msg[2] > 40 && (int)msg[2] < 60) {
         analogWrite(ROLL_OUTPUT_PIN, HALF_OUTPUT_PWM_ROLL);
       } else {
-        analogWrite(ROLL_OUTPUT_PIN, ((int)msg[2] * MAX_OUTPUT_PWM) / 100);
-        
-      }
+        analogWrite(ROLL_OUTPUT_PIN, ((int)msg[2] * MAX_OUTPUT_PWM) / 100); 
+      }*/
+     
 
       // PITCH
-      if((int)msg[3] > 40 && (int)msg[3] < 60) {
-        analogWrite(PITCH_OUTPUT_PIN, HALF_OUTPUT_PWM_PITCH);
+      pitch = normalizePitch((int)msg[3]);
+      
+      analogWrite(PITCH_OUTPUT_PIN, pitch);
+      /*if((int)msg[3] > 40 && (int)msg[3] < 60) {
+        analogWrite(PITCH_OUTPUT_PIN, 200);
       } else {
         analogWrite(PITCH_OUTPUT_PIN, ((int)msg[3] * MAX_OUTPUT_PWM) / 100);
         //Serial.print(msg[3]);
         //Serial.print('\n');
         //Serial.print(   ((int)msg[3] * MAX_OUTPUT_PWM) / 100);
         //Serial.print('\n');
-      }
+      }*/
     }
+  }
+}
+
+int normalizeRoll(int rollValue) {
+  if(rollValue > 40 && rollValue < 60) {
+    return 100;
+  }
+  if(rollValue >= 0 && rollValue <= 10) {
+    return 3;
+  }
+  if(rollValue > 10 && rollValue <= 20) {
+    return 6;
+  }
+  if(rollValue > 20 && rollValue <= 30) {
+    return 9;
+  }
+  if(rollValue > 30 && rollValue <= 40) {
+    return 12;
+  }
+  if(rollValue > 60 && rollValue <= 70) {
+    return 240;
+  }
+  if(rollValue > 70 && rollValue <= 80) {
+    return 245;
+  }
+  if(rollValue > 80 && rollValue <= 90) {
+    return 250;
+  }
+  if(rollValue > 90 && rollValue <= 100) {
+    return 255;
+  }
+}
+
+int normalizePitch(int rollValue) {
+  if(rollValue > 40 && rollValue < 60) {
+    return 100;
+  }
+  if(rollValue >= 0 && rollValue <= 10) {
+    return 3;
+  }
+  if(rollValue > 10 && rollValue <= 20) {
+    return 6;
+  }
+  if(rollValue > 20 && rollValue <= 30) {
+    return 9;
+  }
+  if(rollValue > 30 && rollValue <= 40) {
+    return 12;
+  }
+  if(rollValue > 60 && rollValue <= 70) {
+    return 240;
+  }
+  if(rollValue > 70 && rollValue <= 80) {
+    return 245;
+  }
+  if(rollValue > 80 && rollValue <= 90) {
+    return 250;
+  }
+  if(rollValue > 90 && rollValue <= 100) {
+    return 255;
   }
 }
 
