@@ -2,6 +2,7 @@ package com.calfisher.quadroid;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,9 +10,12 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -31,7 +35,11 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 
 	private TextView axVal;
 	private TextView ayVal;
-	private TextView azVal;
+	//private TextView azVal;
+
+	private ImageView xAccelerometerIndicator = null;
+	private ImageView yAccelerometerIndicator = null;
+
 
 	private OnFragmentInteractionListener mListener;
 
@@ -73,7 +81,10 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		//Get TextViews to output values
 		axVal = (TextView) view.findViewById(R.id.AxValue);
 		ayVal = (TextView) view.findViewById(R.id.AyValue);
-		azVal = (TextView) view.findViewById(R.id.AzValue);
+		//azVal = (TextView) view.findViewById(R.id.AzValue);
+
+		xAccelerometerIndicator = (ImageView)view.findViewById(R.id.x_accelerometer_indicator);
+		yAccelerometerIndicator = (ImageView)view.findViewById(R.id.y_accelerometer_indicator);
 
 		//Set up Sensor
 		sensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
@@ -109,6 +120,7 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 	public void onDetach() {
 		super.onDetach();
 		mListener = null;
+		sensorManager.unregisterListener(this);
 	}
 
 	@Override
@@ -117,9 +129,33 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
 		{
 			//convert range to a 0-100
+			float xValue = (event.values[0] + 10) * 5;
+			float yValue = (event.values[1] + 10) * 5;
+
 			axVal.setText(String.valueOf((event.values[0] + 10) * 5));  //left-right Roll
 			ayVal.setText(String.valueOf((event.values[1] + 10) * 5)); //front-back Pitch
-			azVal.setText(String.valueOf(event.values[2]));
+			//azVal.setText(String.valueOf(event.values[2]));
+
+			DisplayMetrics displayMetrics = new DisplayMetrics();
+			getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+			RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) xAccelerometerIndicator.getLayoutParams();
+			lp.setMargins(
+					(int) (((100 - xValue) * displayMetrics.widthPixels) / 100.0) - (xAccelerometerIndicator.getWidth() / 2),
+					(int) ((displayMetrics.heightPixels - calculateActivityTop() - (yAccelerometerIndicator.getHeight() / 2)) / 2),
+					0,
+					0
+			);
+			xAccelerometerIndicator.setLayoutParams(lp);
+
+			RelativeLayout.LayoutParams lp2 = (android.widget.RelativeLayout.LayoutParams) yAccelerometerIndicator.getLayoutParams();
+			lp2.setMargins(
+					(int) (displayMetrics.widthPixels - yAccelerometerIndicator.getWidth()) / 2,
+					(int) ((yValue * (displayMetrics.heightPixels - calculateActivityTop() - (yAccelerometerIndicator.getHeight() / 2))) / 100.0),
+					0,
+					0
+			);
+			yAccelerometerIndicator.setLayoutParams(lp2);
 		}
 	}
 
@@ -139,5 +175,23 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
+	}
+
+	/*
+	 * This method calculates the top of the application on the screen
+	 * to be used as an offset when determining the top of the grid.
+	 */
+	private int calculateActivityTop() {
+		int top = 0;
+		final TypedArray styledAttributes = getActivity().getApplicationContext().getTheme().obtainStyledAttributes(
+				new int[]{android.R.attr.actionBarSize});
+		top = (int) styledAttributes.getDimension(0, 0);
+		styledAttributes.recycle();
+
+		int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			top += getResources().getDimensionPixelSize(resourceId);
+		}
+		return top;
 	}
 }
