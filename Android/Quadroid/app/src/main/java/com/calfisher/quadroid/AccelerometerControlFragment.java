@@ -2,12 +2,17 @@ package com.calfisher.quadroid;
 
 import android.app.Activity;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 /**
@@ -18,9 +23,15 @@ import android.view.ViewGroup;
  * Use the {@link AccelerometerControlFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AccelerometerControlFragment extends Fragment {
+public class AccelerometerControlFragment extends Fragment implements SensorEventListener {
 	private static final String ARG_TITLE = "fragment_title";
 	private int title;
+
+	private SensorManager sensorManager;
+
+	private TextView axVal;
+	private TextView ayVal;
+	private TextView azVal;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -55,7 +66,20 @@ public class AccelerometerControlFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_accelerometer_control, container, false);
+		//return inflater.inflate(R.layout.fragment_accelerometer_control, container, false);
+
+		View view = inflater.inflate(R.layout.fragment_accelerometer_control, container, false);
+
+		//Get TextViews to output values
+		axVal = (TextView) view.findViewById(R.id.AxValue);
+		ayVal = (TextView) view.findViewById(R.id.AyValue);
+		azVal = (TextView) view.findViewById(R.id.AzValue);
+
+		//Set up Sensor
+		sensorManager = (SensorManager) getActivity().getSystemService(getActivity().SENSOR_SERVICE);
+		sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+
+		return view;
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
@@ -87,6 +111,21 @@ public class AccelerometerControlFragment extends Fragment {
 		mListener = null;
 	}
 
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		//Check that sensor event is accelerometer
+		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+		{
+			//convert range to a 0-100
+			axVal.setText(String.valueOf((event.values[0] + 10) * 5));  //left-right Roll
+			ayVal.setText(String.valueOf((event.values[1] + 10) * 5)); //front-back Pitch
+			azVal.setText(String.valueOf(event.values[2]));
+		}
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
 	/**
 	 * This interface must be implemented by activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated
@@ -101,5 +140,4 @@ public class AccelerometerControlFragment extends Fragment {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
 	}
-
 }

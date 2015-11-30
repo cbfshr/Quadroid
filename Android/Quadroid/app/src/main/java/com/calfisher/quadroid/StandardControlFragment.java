@@ -76,6 +76,11 @@ public class StandardControlFragment extends Fragment {
 	private int rightJoystickTop = 0;
 	private int rightJoystickLeft = 0;
 
+	private int leftTouchIndex = -1;
+	private int rightTouchIndex = -1;
+
+	private int prevPointerCount = 0;
+
 	// ADK Variables
 	// TAG is used to debug in Android logcat console
 	private static final String TAG = "ArduinoAccessory";
@@ -147,37 +152,106 @@ public class StandardControlFragment extends Fragment {
 
 				if ((maskedAction == MotionEvent.ACTION_UP ||
 						maskedAction == MotionEvent.ACTION_POINTER_UP)) {
-					resetLeftJoystickPosition(false);
-					resetRightJoystickPosition();
+					if(pointerCount == 2) {
+						if (event.getActionIndex() == leftTouchIndex) {
+							Log.v("Index Up1: ", String.format("%d", event.getActionIndex()));
+							leftJoystickPositionSet = false;
+							leftTouchIndex = -1;
+							resetLeftJoystickPosition(false);
+
+							if(rightTouchIndex == 1) {
+								rightTouchIndex = 0;
+							}
+						}
+						if (event.getActionIndex() == rightTouchIndex) {
+							Log.v("Index Up2: ", String.format("%d", event.getActionIndex()));
+							rightJoystickPositionSet = false;
+							rightTouchIndex = -1;
+							resetRightJoystickPosition();
+
+							if(leftTouchIndex == 1) {
+								leftTouchIndex = 0;
+							}
+						}
+					} else {
+						leftJoystickPositionSet = false;
+						leftTouchIndex = -1;
+						resetLeftJoystickPosition(false);
+
+						rightJoystickPositionSet = false;
+						rightTouchIndex = -1;
+						resetRightJoystickPosition();
+					}
 				} else {
 					getJoystickPositions();
+
+					/*if(prevPointerCount > pointerCount) {
+						leftJoystickPositionSet = false;
+						rightJoystickPositionSet = false;
+					}*/
 
 					for (int i = 0; i < pointerCount && i < MAX_TOUCHES; i++) {
 						xTouchPosition[i] = MotionEventCompat.getX(event, i);
 						yTouchPosition[i] = MotionEventCompat.getY(event, i);
 
-						if (xTouchPosition[i] > leftJoystickLeft &&
-								xTouchPosition[i] < leftJoystick.getWidth() + leftJoystickLeft &&
-								yTouchPosition[i] > leftJoystickTop &&
-								yTouchPosition[i] < leftJoystick.getBottom() + leftJoystickTop &&
-								leftJoystickPositionSet == false) {
-							Log.v("Within Left Joystick:", "True");
+						if (rightJoystickPositionSet == false) {
+							if (xTouchPosition[i] > rightJoystickLeft &&
+									xTouchPosition[i] < rightJoystick.getWidth() + rightJoystickLeft &&
+									yTouchPosition[i] > rightJoystickTop &&
+									yTouchPosition[i] < rightJoystick.getBottom() + rightJoystickTop) {
+								rightJoystickPositionX = xTouchPosition[i];
+								rightJoystickPositionY = yTouchPosition[i];
 
-							leftJoystickPositionX = xTouchPosition[i];
-							leftJoystickPositionY = yTouchPosition[i];
+								rightJoystickPositionSet = true;
+								rightTouchIndex = i;
+							}
+						} else {
+							rightJoystickPositionX = xTouchPosition[rightTouchIndex];
+							rightJoystickPositionY = yTouchPosition[rightTouchIndex];
 
-							leftJoystickPositionSet = true;
-						} else if (xTouchPosition[i] > rightJoystickLeft &&
-								xTouchPosition[i] < rightJoystick.getWidth() + rightJoystickLeft &&
-								yTouchPosition[i] > rightJoystickTop &&
-								yTouchPosition[i] < rightJoystick.getBottom() + rightJoystickTop &&
-								rightJoystickPositionSet == false) {
-							Log.v("Within Right Joystick:", "True");
+							// If the touch point is beyond the bounds, put them at the extremes.
+							if (rightJoystickPositionX < rightJoystickLeft) {
+								rightJoystickPositionX = rightJoystickLeft;
+							} else if(rightJoystickPositionX > rightJoystick.getWidth() + rightJoystickLeft) {
+								rightJoystickPositionX = rightJoystick.getWidth() + rightJoystickLeft;
+							}
 
-							rightJoystickPositionX = xTouchPosition[i];
-							rightJoystickPositionY = yTouchPosition[i];
+							if(rightJoystickPositionY < rightJoystickTop) {
+								rightJoystickPositionY = rightJoystickTop;
+							} else if(rightJoystickPositionY > rightJoystick.getBottom() + rightJoystickTop) {
+								rightJoystickPositionY = rightJoystick.getBottom() + rightJoystickTop;
+							}
+						}
 
-							rightJoystickPositionSet = true;
+						if (leftJoystickPositionSet == false) {
+							if (xTouchPosition[i] > leftJoystickLeft &&
+									xTouchPosition[i] < leftJoystick.getWidth() + leftJoystickLeft &&
+									yTouchPosition[i] > leftJoystickTop &&
+									yTouchPosition[i] < leftJoystick.getBottom() + leftJoystickTop) {
+								Log.v("Within Left Joystick:", "True");
+
+								leftJoystickPositionX = xTouchPosition[i];
+								leftJoystickPositionY = yTouchPosition[i];
+
+								leftJoystickPositionSet = true;
+								leftTouchIndex = i;
+							}
+						} else {
+							leftJoystickPositionX = xTouchPosition[leftTouchIndex];
+							leftJoystickPositionY = yTouchPosition[leftTouchIndex];
+
+							// If the touch point is beyond the bounds, put them at the bounds.
+							if (leftJoystickPositionX < leftJoystickLeft) {
+								leftJoystickPositionX = leftJoystickLeft;
+							} else if(leftJoystickPositionX > leftJoystick.getWidth() + leftJoystickLeft) {
+								leftJoystickPositionX = leftJoystick.getWidth() + leftJoystickLeft;
+							}
+
+							if(leftJoystickPositionY < leftJoystickTop) {
+								leftJoystickPositionY = leftJoystickTop;
+							} else if(leftJoystickPositionY > leftJoystick.getBottom() + leftJoystickTop) {
+								leftJoystickPositionY = leftJoystick.getBottom() + leftJoystickTop;
+							}
 						}
 					}
 
@@ -219,16 +293,18 @@ public class StandardControlFragment extends Fragment {
 						resetRightJoystickPosition();
 					}
 
-					leftJoystickPositionSet = false;
-					rightJoystickPositionSet = false;
+					/*leftJoystickPositionSet = false;
+					rightJoystickPositionSet = false;*/
 				}
 
-				sendControlValues(
+				// Uncomment this to test the application without an Arduino connected.
+				/*sendControlValues(
 					(int) ((1 - ((leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth())) * 100),
 					(int) ((1 - ((leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight())) * 100),
 					(int) ((1 - ((rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth())) * 100),
 					(int) ((1 - ((rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight())) * 100)
-				);
+				);*/
+				prevPointerCount = pointerCount;
 				return true;
 			}
 		});

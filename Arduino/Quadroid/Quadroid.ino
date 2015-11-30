@@ -53,8 +53,8 @@ void startupProtocol() {
 
 void loop() {
   byte msg[6];
-  int thrust = 0;
   int yaw = 0;
+  int thrust = 0;
   int roll = 0;
   int pitch = 0;
 
@@ -67,6 +67,8 @@ void loop() {
     int len = acc.read(msg, sizeof(msg), 1);
     
     if(len > 0) {
+      debugValues((int)msg[0], (int)msg[1], (int)msg[2], (int)msg[3]);
+
       // THRUST
       if((int)msg[1] < 10) {
         analogWrite(THRUST_OUTPUT_PIN, 0);
@@ -75,8 +77,6 @@ void loop() {
       }
 
       // YAW
-      Serial.print((int)msg[0]);
-      Serial.print('\n');
       if((int)msg[0] < 35) {
         analogWrite(YAW_OUTPUT_PIN, 3);
       } else if((int)msg[0] > 65) {
@@ -88,26 +88,10 @@ void loop() {
       // ROLL
       roll = normalizeRoll((int)msg[2]);
       analogWrite(ROLL_OUTPUT_PIN, roll);
-      /*if((int)msg[2] > 40 && (int)msg[2] < 60) {
-        analogWrite(ROLL_OUTPUT_PIN, HALF_OUTPUT_PWM_ROLL);
-      } else {
-        analogWrite(ROLL_OUTPUT_PIN, ((int)msg[2] * MAX_OUTPUT_PWM) / 100); 
-      }*/
-     
 
       // PITCH
       pitch = normalizePitch((int)msg[3]);
-      
       analogWrite(PITCH_OUTPUT_PIN, pitch);
-      /*if((int)msg[3] > 40 && (int)msg[3] < 60) {
-        analogWrite(PITCH_OUTPUT_PIN, 200);
-      } else {
-        analogWrite(PITCH_OUTPUT_PIN, ((int)msg[3] * MAX_OUTPUT_PWM) / 100);
-        //Serial.print(msg[3]);
-        //Serial.print('\n');
-        //Serial.print(   ((int)msg[3] * MAX_OUTPUT_PWM) / 100);
-        //Serial.print('\n');
-      }*/
     }
   }
 }
@@ -170,5 +154,25 @@ int normalizePitch(int rollValue) {
   if(rollValue > 90 && rollValue <= 100) {
     return 255;
   }
+}
+
+void debugValues(int yaw, int thrust, int roll, pitch) {
+  Serial.print("Yaw: ");
+  Serial.print(yaw);
+  Serial.print('\n');
+
+  Serial.print("Thrust: ");
+  Serial.print(yaw);
+  Serial.print('\n');
+
+  Serial.print("Roll: ");
+  Serial.print(yaw);
+  Serial.print('\n');
+
+  Serial.print("Pitch: ");
+  Serial.print(yaw);
+  Serial.print('\n');
+  
+  Serial.print('\n');
 }
 
