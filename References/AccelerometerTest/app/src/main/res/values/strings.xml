@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AccelerometerTest</string>
+
+    <string name="Ax">Ax Value: </string>
+    <string name="Ay">Ay Value: </string>
+    <string name="Az">Az Value: </string>
+    <string name="action_settings">Settings</string>
+
+</resources>
