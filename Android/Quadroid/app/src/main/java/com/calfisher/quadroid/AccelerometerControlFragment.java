@@ -18,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,8 +43,9 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 	private ImageView xAccelerometerIndicator = null;
 	private ImageView yAccelerometerIndicator = null;
 
-
 	private OnFragmentInteractionListener mListener;
+
+	FileOutputStream mOutputStream;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -91,6 +95,14 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 
 		return view;
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		MainActivity mainActivity = (MainActivity)getActivity();
+		mOutputStream = mainActivity.getOutputStream();
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
@@ -156,11 +168,31 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 					0
 			);
 			yAccelerometerIndicator.setLayoutParams(lp2);
+
+			sendControlValues(50, 0, (int)xValue, (int)yValue);
 		}
 	}
 
 	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+	// Sends the joystick values in the form of a byte array to the Arduino.
+	// The values are between 0-100 (Ratio value * 100)
+	private void sendControlValues(int a, int b, int c, int d) {
+		byte[] signal = new byte[6];
+		signal[0] = (byte)a;
+		signal[1] = (byte)b;
+		signal[2] = (byte)101;
+		signal[3] = (byte)101;
+		signal[4] = (byte)c;
+		signal[5] = (byte)d;
+
+		try {
+			mOutputStream.write(signal);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * This interface must be implemented by activities that contain this

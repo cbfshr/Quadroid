@@ -81,19 +81,19 @@ public class StandardControlFragment extends Fragment {
 
 	private int prevPointerCount = 0;
 
-	// ADK Variables
-	// TAG is used to debug in Android logcat console
-	private static final String TAG = "ArduinoAccessory";
-
-	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
-
-	private UsbManager mUsbManager;
-	private PendingIntent mPermissionIntent;
-	private boolean mPermissionRequestPending;
-
-	UsbAccessory mAccessory;
-	ParcelFileDescriptor mFileDescriptor;
-	FileInputStream mInputStream;
+//	// ADK Variables
+//	// TAG is used to debug in Android logcat console
+//	private static final String TAG = "ArduinoAccessory";
+//
+//	private static final String ACTION_USB_PERMISSION = "com.google.android.DemoKit.action.USB_PERMISSION";
+//
+//	private UsbManager mUsbManager;
+//	private PendingIntent mPermissionIntent;
+//	private boolean mPermissionRequestPending;
+//
+//	UsbAccessory mAccessory;
+//	ParcelFileDescriptor mFileDescriptor;
+//	FileInputStream mInputStream;
 	FileOutputStream mOutputStream;
 
 	/**
@@ -120,12 +120,12 @@ public class StandardControlFragment extends Fragment {
 		if (getArguments() != null) {
 			title = getArguments().getInt(ARG_TITLE);
 		}
-
-		mUsbManager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
-		mPermissionIntent = PendingIntent.getBroadcast(getContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
-		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
-		getActivity().registerReceiver(mUsbReceiver, filter);
+//
+//		mUsbManager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
+//		mPermissionIntent = PendingIntent.getBroadcast(getContext(), 0, new Intent(ACTION_USB_PERMISSION), 0);
+//		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+//		filter.addAction(UsbManager.ACTION_USB_ACCESSORY_DETACHED);
+//		getActivity().registerReceiver(mUsbReceiver, filter);
 	}
 
 	@Override
@@ -152,14 +152,14 @@ public class StandardControlFragment extends Fragment {
 
 				if ((maskedAction == MotionEvent.ACTION_UP ||
 						maskedAction == MotionEvent.ACTION_POINTER_UP)) {
-					if(pointerCount == 2) {
+					if (pointerCount == 2) {
 						if (event.getActionIndex() == leftTouchIndex) {
 							Log.v("Index Up1: ", String.format("%d", event.getActionIndex()));
 							leftJoystickPositionSet = false;
 							leftTouchIndex = -1;
 							resetLeftJoystickPosition(false);
 
-							if(rightTouchIndex == 1) {
+							if (rightTouchIndex == 1) {
 								rightTouchIndex = 0;
 							}
 						}
@@ -169,7 +169,7 @@ public class StandardControlFragment extends Fragment {
 							rightTouchIndex = -1;
 							resetRightJoystickPosition();
 
-							if(leftTouchIndex == 1) {
+							if (leftTouchIndex == 1) {
 								leftTouchIndex = 0;
 							}
 						}
@@ -212,13 +212,13 @@ public class StandardControlFragment extends Fragment {
 							// If the touch point is beyond the bounds, put them at the extremes.
 							if (rightJoystickPositionX < rightJoystickLeft) {
 								rightJoystickPositionX = rightJoystickLeft;
-							} else if(rightJoystickPositionX > rightJoystick.getWidth() + rightJoystickLeft) {
+							} else if (rightJoystickPositionX > rightJoystick.getWidth() + rightJoystickLeft) {
 								rightJoystickPositionX = rightJoystick.getWidth() + rightJoystickLeft;
 							}
 
-							if(rightJoystickPositionY < rightJoystickTop) {
+							if (rightJoystickPositionY < rightJoystickTop) {
 								rightJoystickPositionY = rightJoystickTop;
-							} else if(rightJoystickPositionY > rightJoystick.getBottom() + rightJoystickTop) {
+							} else if (rightJoystickPositionY > rightJoystick.getBottom() + rightJoystickTop) {
 								rightJoystickPositionY = rightJoystick.getBottom() + rightJoystickTop;
 							}
 						}
@@ -243,13 +243,13 @@ public class StandardControlFragment extends Fragment {
 							// If the touch point is beyond the bounds, put them at the bounds.
 							if (leftJoystickPositionX < leftJoystickLeft) {
 								leftJoystickPositionX = leftJoystickLeft;
-							} else if(leftJoystickPositionX > leftJoystick.getWidth() + leftJoystickLeft) {
+							} else if (leftJoystickPositionX > leftJoystick.getWidth() + leftJoystickLeft) {
 								leftJoystickPositionX = leftJoystick.getWidth() + leftJoystickLeft;
 							}
 
-							if(leftJoystickPositionY < leftJoystickTop) {
+							if (leftJoystickPositionY < leftJoystickTop) {
 								leftJoystickPositionY = leftJoystickTop;
-							} else if(leftJoystickPositionY > leftJoystick.getBottom() + leftJoystickTop) {
+							} else if (leftJoystickPositionY > leftJoystick.getBottom() + leftJoystickTop) {
 								leftJoystickPositionY = leftJoystick.getBottom() + leftJoystickTop;
 							}
 						}
@@ -298,12 +298,12 @@ public class StandardControlFragment extends Fragment {
 				}
 
 				// Uncomment this to test the application without an Arduino connected.
-				/*sendControlValues(
-					(int) ((1 - ((leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth())) * 100),
-					(int) ((1 - ((leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight())) * 100),
-					(int) ((1 - ((rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth())) * 100),
-					(int) ((1 - ((rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight())) * 100)
-				);*/
+				sendControlValues(
+						(int) ((1 - ((leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth())) * 100),
+						(int) ((1 - ((leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight())) * 100),
+						(int) ((1 - ((rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth())) * 100),
+						(int) ((1 - ((rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight())) * 100)
+				);
 				prevPointerCount = pointerCount;
 				return true;
 			}
@@ -413,27 +413,36 @@ public class StandardControlFragment extends Fragment {
 	public void onResume() {
 		super.onResume();
 
-		if (mInputStream != null && mOutputStream != null) {
-			return;
-		}
+		MainActivity mainActivity = (MainActivity)getActivity();
+		mOutputStream = mainActivity.getOutputStream();
 
-		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
-		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
-		if (accessory != null) {
-			if (mUsbManager.hasPermission(accessory)) {
-				openAccessory(accessory);
-			} else {
-				synchronized (mUsbReceiver) {
-					if (!mPermissionRequestPending) {
-						mUsbManager.requestPermission(accessory, mPermissionIntent);
-						mPermissionRequestPending = true;
-					}
-				}
-			}
-		} else {
-			Log.d(TAG, "mAccessory is null");
-		}
+//		if (mInputStream != null && mOutputStream != null) {
+//			return;
+//		}
+//
+//		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
+//		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
+//		if (accessory != null) {
+//			if (mUsbManager.hasPermission(accessory)) {
+//				openAccessory(accessory);
+//			} else {
+//				synchronized (mUsbReceiver) {
+//					if (!mPermissionRequestPending) {
+//						mUsbManager.requestPermission(accessory, mPermissionIntent);
+//						mPermissionRequestPending = true;
+//					}
+//				}
+//			}
+//		} else {
+//			Log.d(TAG, "mAccessory is null");
+//		}
 	}
+/*
+	@Override
+	public void onPause() {
+		super.onPause();
+		getActivity().unregisterReceiver(mUsbReceiver);
+	}*/
 
 	@Override
 	public void onDetach() {
@@ -455,54 +464,54 @@ public class StandardControlFragment extends Fragment {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
 	}
-
-	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (ACTION_USB_PERMISSION.equals(action)) {
-				synchronized (this) {
-					UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-						openAccessory(accessory);
-					} else {
-						Log.d(TAG, "permission denied for accessory " + accessory);
-					}
-					mPermissionRequestPending = false;
-				}
-			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-				UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-				if (accessory != null && accessory.equals(mAccessory)) {
-					closeAccessory();
-				}
-			}
-		}
-	};
-
-	private void openAccessory(UsbAccessory accessory) {
-		mFileDescriptor = mUsbManager.openAccessory(accessory);
-		if (mFileDescriptor != null) {
-			mAccessory = accessory;
-			FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-			mInputStream = new FileInputStream(fd);
-			mOutputStream = new FileOutputStream(fd);
-			Log.d(TAG, "accessory opened");
-		} else {
-			Log.d(TAG, "accessory open fail");
-		}
-	}
-
-	private void closeAccessory() {
-		try {
-			if (mFileDescriptor != null) {
-				mFileDescriptor.close();
-			}
-		} catch (IOException e) {
-		} finally {
-			mFileDescriptor = null;
-			mAccessory = null;
-		}
-	}
+//
+//	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			String action = intent.getAction();
+//			if (ACTION_USB_PERMISSION.equals(action)) {
+//				synchronized (this) {
+//					UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+//					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+//						openAccessory(accessory);
+//					} else {
+//						Log.d(TAG, "permission denied for accessory " + accessory);
+//					}
+//					mPermissionRequestPending = false;
+//				}
+//			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
+//				UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+//				if (accessory != null && accessory.equals(mAccessory)) {
+//					closeAccessory();
+//				}
+//			}
+//		}
+//	};
+//
+//	private void openAccessory(UsbAccessory accessory) {
+//		mFileDescriptor = mUsbManager.openAccessory(accessory);
+//		if (mFileDescriptor != null) {
+//			mAccessory = accessory;
+//			FileDescriptor fd = mFileDescriptor.getFileDescriptor();
+//			mInputStream = new FileInputStream(fd);
+//			mOutputStream = new FileOutputStream(fd);
+//			Log.d(TAG, "accessory opened");
+//		} else {
+//			Log.d(TAG, "accessory open fail");
+//		}
+//	}
+//
+//	private void closeAccessory() {
+//		try {
+//			if (mFileDescriptor != null) {
+//				mFileDescriptor.close();
+//			}
+//		} catch (IOException e) {
+//		} finally {
+//			mFileDescriptor = null;
+//			mAccessory = null;
+//		}
+//	}
 
 	/*
 	 * This method calculates the top of the application on the screen

@@ -67,7 +67,7 @@ void loop() {
     int len = acc.read(msg, sizeof(msg), 1);
     
     if(len > 0) {
-      debugValues((int)msg[0], (int)msg[1], (int)msg[2], (int)msg[3]);
+      //debugValues((int)msg[0], (int)msg[1], (int)msg[2], (int)msg[3]);
 
       // THRUST
       if((int)msg[1] < 10) {
@@ -86,13 +86,48 @@ void loop() {
       }
 
       // ROLL
-      roll = normalizeRoll((int)msg[2]);
-      analogWrite(ROLL_OUTPUT_PIN, roll);
+      if((int)msg[2] == 101) {
+        roll = normalizeRollAccel((int)msg[4]);
+        analogWrite(ROLL_OUTPUT_PIN, roll);
+      } else {
+        roll = normalizeRoll((int)msg[2]);
+        analogWrite(ROLL_OUTPUT_PIN, roll);
+      }
 
       // PITCH
       pitch = normalizePitch((int)msg[3]);
       analogWrite(PITCH_OUTPUT_PIN, pitch);
     }
+  }
+}
+
+int normalizeRollAccel(int rollValue) {
+  if(rollValue > 0 && rollValue <= 35) {
+    return 12;
+  }
+  if(rollValue >= 30 && rollValue <= 35) {
+    return 6;
+  }
+  if(rollValue > 35 && rollValue <= 40) {
+    return 9;
+  }
+  if(rollValue > 40 && rollValue <= 45) {
+    return 12;
+  }
+  if(rollValue > 45 && rollValue <= 55) {
+    return 100;
+  }
+  if(rollValue > 55 && rollValue <= 60) {
+    return 240;
+  }
+  if(rollValue > 60 && rollValue <= 65) {
+    return 245;
+  }
+  if(rollValue > 65 && rollValue <= 70) {
+    return 250;
+  }
+  if(rollValue > 70 && rollValue <= 100) {
+    return 255;
   }
 }
 
@@ -156,7 +191,7 @@ int normalizePitch(int rollValue) {
   }
 }
 
-void debugValues(int yaw, int thrust, int roll, pitch) {
+/*void debugValues(int yaw, int thrust, int roll, pitch) {
   Serial.print("Yaw: ");
   Serial.print(yaw);
   Serial.print('\n');
@@ -174,5 +209,5 @@ void debugValues(int yaw, int thrust, int roll, pitch) {
   Serial.print('\n');
   
   Serial.print('\n');
-}
+}*/
 
