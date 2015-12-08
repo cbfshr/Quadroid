@@ -292,17 +292,13 @@ public class StandardControlFragment extends Fragment {
 					} else {
 						resetRightJoystickPosition();
 					}
-
-					/*leftJoystickPositionSet = false;
-					rightJoystickPositionSet = false;*/
 				}
 
-				// Uncomment this to test the application without an Arduino connected.
 				sendControlValues(
-						(int) ((1 - ((leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth())) * 100),
-						(int) ((1 - ((leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight())) * 100),
-						(int) ((1 - ((rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth())) * 100),
-						(int) ((1 - ((rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight())) * 100)
+					(int) ((1 - ((leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth())) * 100),
+					(int) ((1 - ((leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight())) * 100),
+					(int) ((1 - ((rightJoystickPositionX - rightJoystickLeft) / rightJoystick.getWidth())) * 100),
+					(int) ((1 - ((rightJoystickPositionY - rightJoystickTop) / rightJoystick.getHeight())) * 100)
 				);
 				prevPointerCount = pointerCount;
 				return true;
@@ -375,11 +371,13 @@ public class StandardControlFragment extends Fragment {
 		signal[1] = (byte)b;
 		signal[2] = (byte)c;
 		signal[3] = (byte)d;
-		signal[4] = (byte)1;
-		signal[5] = (byte)1;
+		signal[4] = (byte)101;
+		signal[5] = (byte)101;
 
 		try {
-			mOutputStream.write(signal);
+			if(mOutputStream != null) {
+				mOutputStream.write(signal);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -415,34 +413,7 @@ public class StandardControlFragment extends Fragment {
 
 		MainActivity mainActivity = (MainActivity)getActivity();
 		mOutputStream = mainActivity.getOutputStream();
-
-//		if (mInputStream != null && mOutputStream != null) {
-//			return;
-//		}
-//
-//		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
-//		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
-//		if (accessory != null) {
-//			if (mUsbManager.hasPermission(accessory)) {
-//				openAccessory(accessory);
-//			} else {
-//				synchronized (mUsbReceiver) {
-//					if (!mPermissionRequestPending) {
-//						mUsbManager.requestPermission(accessory, mPermissionIntent);
-//						mPermissionRequestPending = true;
-//					}
-//				}
-//			}
-//		} else {
-//			Log.d(TAG, "mAccessory is null");
-//		}
 	}
-/*
-	@Override
-	public void onPause() {
-		super.onPause();
-		getActivity().unregisterReceiver(mUsbReceiver);
-	}*/
 
 	@Override
 	public void onDetach() {
@@ -464,54 +435,6 @@ public class StandardControlFragment extends Fragment {
 		// TODO: Update argument type and name
 		public void onFragmentInteraction(Uri uri);
 	}
-//
-//	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			String action = intent.getAction();
-//			if (ACTION_USB_PERMISSION.equals(action)) {
-//				synchronized (this) {
-//					UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-//					if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-//						openAccessory(accessory);
-//					} else {
-//						Log.d(TAG, "permission denied for accessory " + accessory);
-//					}
-//					mPermissionRequestPending = false;
-//				}
-//			} else if (UsbManager.ACTION_USB_ACCESSORY_DETACHED.equals(action)) {
-//				UsbAccessory accessory = intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
-//				if (accessory != null && accessory.equals(mAccessory)) {
-//					closeAccessory();
-//				}
-//			}
-//		}
-//	};
-//
-//	private void openAccessory(UsbAccessory accessory) {
-//		mFileDescriptor = mUsbManager.openAccessory(accessory);
-//		if (mFileDescriptor != null) {
-//			mAccessory = accessory;
-//			FileDescriptor fd = mFileDescriptor.getFileDescriptor();
-//			mInputStream = new FileInputStream(fd);
-//			mOutputStream = new FileOutputStream(fd);
-//			Log.d(TAG, "accessory opened");
-//		} else {
-//			Log.d(TAG, "accessory open fail");
-//		}
-//	}
-//
-//	private void closeAccessory() {
-//		try {
-//			if (mFileDescriptor != null) {
-//				mFileDescriptor.close();
-//			}
-//		} catch (IOException e) {
-//		} finally {
-//			mFileDescriptor = null;
-//			mAccessory = null;
-//		}
-//	}
 
 	/*
 	 * This method calculates the top of the application on the screen

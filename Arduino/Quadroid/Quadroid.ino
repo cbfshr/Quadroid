@@ -52,7 +52,7 @@ void startupProtocol() {
 }
 
 void loop() {
-  byte msg[6];
+  byte msg[7];
   int yaw = 0;
   int thrust = 0;
   int roll = 0;
@@ -61,7 +61,7 @@ void loop() {
   //msg[0] - yaw
   //msg[1] - thrust
   //msg[2] - roll
-  //msg[3] - pitcg
+  //msg[3] - pitch
   
   if(acc.isConnected()) {
     int len = acc.read(msg, sizeof(msg), 1);
@@ -70,10 +70,10 @@ void loop() {
       //debugValues((int)msg[0], (int)msg[1], (int)msg[2], (int)msg[3]);
 
       // THRUST
-      if((int)msg[1] < 10) {
+      if((int)msg[1] < 15) {
         analogWrite(THRUST_OUTPUT_PIN, 0);
       } else {
-        analogWrite(THRUST_OUTPUT_PIN, (((int)msg[1] * MAX_OUTPUT_PWM)) / 100);
+        analogWrite(THRUST_OUTPUT_PIN, ((((int)msg[1] - 10) * MAX_OUTPUT_PWM)) / 100);
       }
 
       // YAW
@@ -95,15 +95,51 @@ void loop() {
       }
 
       // PITCH
-      pitch = normalizePitch((int)msg[3]);
-      analogWrite(PITCH_OUTPUT_PIN, pitch);
+      if((int)msg[3] == 101) {
+        pitch = normalizePitchAccel((int)msg[5]);
+        //analogWrite(ROLL_OUTPUT_PIN, pitch);
+        analogWrite(PITCH_OUTPUT_PIN, pitch);
+      } else {
+        pitch = normalizePitch((int)msg[3]);
+        analogWrite(PITCH_OUTPUT_PIN, pitch);
+      }
     }
   }
 }
 
 int normalizeRollAccel(int rollValue) {
   if(rollValue > 0 && rollValue <= 35) {
+    return 3;
+  }
+  if(rollValue >= 30 && rollValue <= 35) {
+    return 6;
+  }
+  if(rollValue > 35 && rollValue <= 40) {
+    return 9;
+  }
+  if(rollValue > 40 && rollValue <= 45) {
     return 12;
+  }
+  if(rollValue > 45 && rollValue <= 55) {
+    return 140;
+  }
+  if(rollValue > 55 && rollValue <= 60) {
+    return 240;
+  }
+  if(rollValue > 60 && rollValue <= 65) {
+    return 245;
+  }
+  if(rollValue > 65 && rollValue <= 70) {
+    return 250;
+  }
+  if(rollValue > 70 && rollValue <= 100) {
+    return 255;
+  }
+}
+
+int normalizePitchAccel(int rollValue) {
+  if(rollValue > 0 && rollValue <= 35) {
+    return 3;
   }
   if(rollValue >= 30 && rollValue <= 35) {
     return 6;
@@ -133,7 +169,7 @@ int normalizeRollAccel(int rollValue) {
 
 int normalizeRoll(int rollValue) {
   if(rollValue > 40 && rollValue < 60) {
-    return 100;
+    return 40;
   }
   if(rollValue >= 0 && rollValue <= 10) {
     return 3;
@@ -163,7 +199,7 @@ int normalizeRoll(int rollValue) {
 
 int normalizePitch(int rollValue) {
   if(rollValue > 40 && rollValue < 60) {
-    return 100;
+    return 60;
   }
   if(rollValue >= 0 && rollValue <= 10) {
     return 3;
