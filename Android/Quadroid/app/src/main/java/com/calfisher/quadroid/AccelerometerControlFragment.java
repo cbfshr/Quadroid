@@ -1,6 +1,5 @@
 package com.calfisher.quadroid;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.hardware.Sensor;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MotionEventCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,7 +37,6 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 	private int MAX_TOUCHES = 1;
 
 	private ImageView leftJoystick = null;
-	private TextView leftJoystickPosition = null;
 	private TextView leftJoystickValue = null;
 	private ImageView leftJoystickIndicator = null;
 	private float[] xTouchPosition = new float[MAX_TOUCHES];
@@ -72,7 +69,6 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 	 * @param title Title of the Fragment
 	 * @return A new instance of fragment AccelerometerControlFragment.
 	 */
-	// TODO: Rename and change types and number of parameters
 	public static AccelerometerControlFragment newInstance(int title) {
 		AccelerometerControlFragment fragment = new AccelerometerControlFragment();
 		Bundle args = new Bundle();
@@ -98,7 +94,6 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		View view = inflater.inflate(R.layout.fragment_accelerometer_control, container, false);
 
 		// JOYSTICK
-		leftJoystickPosition = (TextView)view.findViewById(R.id.left_joystick_position);
 		leftJoystickValue = (TextView)view.findViewById(R.id.left_joystick_value);
 		leftJoystick = (ImageView)view.findViewById(R.id.left_joystick);
 		leftJoystickIndicator = (ImageView)view.findViewById(R.id.left_joystick_indicator);
@@ -121,20 +116,16 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 				int pointerCount = event.getPointerCount();
 				int maskedAction = event.getActionMasked();
 
+				// If a touch is lifted, reset joystick
 				if ((maskedAction == MotionEvent.ACTION_UP ||
 						maskedAction == MotionEvent.ACTION_POINTER_UP)) {
 					if (pointerCount == 1) {
 						if (event.getActionIndex() == leftTouchIndex) {
-							Log.v("Index Up1: ", String.format("%d", event.getActionIndex()));
 							leftJoystickPositionSet = false;
 							leftTouchIndex = -1;
 							resetLeftJoystickPosition(false);
 						}
-					}/* else {
-						leftJoystickPositionSet = false;
-						leftTouchIndex = -1;
-						resetLeftJoystickPosition(false);
-					}*/
+					}
 				} else {
 					getJoystickPositions();
 
@@ -142,13 +133,13 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 						xTouchPosition[i] = MotionEventCompat.getX(event, i);
 						yTouchPosition[i] = MotionEventCompat.getY(event, i);
 
+						// The joystick was not previously touched
 						if (leftJoystickPositionSet == false) {
+							// Check that the joystick is within the bounds
 							if (xTouchPosition[i] > leftJoystickLeft &&
 									xTouchPosition[i] < leftJoystick.getWidth() + leftJoystickLeft &&
 									yTouchPosition[i] > leftJoystickTop &&
 									yTouchPosition[i] < leftJoystick.getBottom() + leftJoystickTop) {
-								Log.v("Within Left Joystick:", "True");
-
 								leftJoystickPositionX = xTouchPosition[i];
 								leftJoystickPositionY = yTouchPosition[i];
 
@@ -175,7 +166,6 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 					}
 
 					if (leftJoystickPositionSet == true) {
-						leftJoystickPosition.setText(String.format("%f, %f", leftJoystickPositionX, leftJoystickPositionY));
 						RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) leftJoystickIndicator.getLayoutParams();
 						lp.setMargins(
 								(int) leftJoystickPositionX - (leftJoystickIndicator.getWidth() / 2),
@@ -185,22 +175,15 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 						);
 						leftJoystickIndicator.setLayoutParams(lp);
 						leftJoystickValue.setText(String.format(
-								"(%f, %f)",
+								"Joystick: (Yaw: %f, Thrust %f)",
 								1 - (leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth(),
 								1 - (leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight()
 						));
 					} else {
 						resetLeftJoystickPosition(false);
 					}
-
-
-					//leftJoystickPositionSet = false;
-					//rightJoystickPositionSet = false;
 				}
 
-
-				Log.e("X Accel Value0", String.format("%f", xAccelerometerValue));
-				Log.e("Y Accel Value0", String.format("%f", yAccelerometerValue));
 				sendControlValues(
 					(int) ((1 - ((leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth())) * 100),
 					(int) ((1 - ((leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight())) * 100),
@@ -222,7 +205,6 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 			leftJoystickPositionY = leftJoystickTop + leftJoystick.getHeight();
 		}
 
-		leftJoystickPosition.setText(String.format("%f, %f", leftJoystickPositionX, leftJoystickPositionY));
 		RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) leftJoystickIndicator.getLayoutParams();
 		lp.setMargins(
 				(int) leftJoystickPositionX - (leftJoystickIndicator.getWidth() / 2),
@@ -232,7 +214,7 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		);
 		leftJoystickIndicator.setLayoutParams(lp);
 		leftJoystickValue.setText(String.format(
-				"(%f, %f)",
+				"Joystick: (Yaw: %f, Pitch: %f)",
 				1 - (leftJoystickPositionX - leftJoystickLeft) / leftJoystick.getWidth(),
 				1 - (leftJoystickPositionY - leftJoystickTop) / leftJoystick.getHeight()
 		));
@@ -287,17 +269,19 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		//Check that sensor event is accelerometer
 		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 			//convert range to a 0-100
-			//float xValue = (event.values[0] + 10) * 5;
-			//float yValue = (event.values[1] + 10) * 5;
 			xAccelerometerValue = (event.values[0] + 10) * 5;
 			yAccelerometerValue = (event.values[1] + 10) * 5;
 
-			axVal.setText(String.valueOf(xAccelerometerValue));  //left-right Roll
-			ayVal.setText(String.valueOf(100 - yAccelerometerValue)); //front-back Pitch
+			//left-right Roll
+			axVal.setText("Roll: " +String.valueOf(xAccelerometerValue));
+			//front-back Pitch
+			ayVal.setText("Pitch: " +String.valueOf(100 - yAccelerometerValue));
 
+			// Get the metrics of the screen (width/height)
 			DisplayMetrics displayMetrics = new DisplayMetrics();
 			getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
+			// Set the location of the Roll Accelerometer indicator
 			RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) xAccelerometerIndicator.getLayoutParams();
 			lp.setMargins(
 					(int) (((100 - xAccelerometerValue) * displayMetrics.widthPixels) / 100.0) - (xAccelerometerIndicator.getWidth() / 2),
@@ -307,6 +291,7 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 			);
 			xAccelerometerIndicator.setLayoutParams(lp);
 
+			// Set the location of the Pitch Accelerometer indicator
 			RelativeLayout.LayoutParams lp2 = (android.widget.RelativeLayout.LayoutParams) yAccelerometerIndicator.getLayoutParams();
 			lp2.setMargins(
 					(displayMetrics.widthPixels - xAccelerometerIndicator.getWidth()) / 2,
@@ -315,16 +300,6 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 					0
 			);
 			yAccelerometerIndicator.setLayoutParams(lp2);
-
-
-			//Log.e("X Accel Value1", String.format("%f", xAccelerometerValue));
-			//Log.e("Y Accel Value1", String.format("%f", yAccelerometerValue));
-			/*sendControlValues(
-					50,
-					0,
-					(int) xAccelerometerValue,
-					(int) yAccelerometerValue
-			);*/
 		}
 	}
 
@@ -339,9 +314,7 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 		signal[1] = (byte)b;
 		signal[2] = (byte)101;
 		signal[3] = (byte)101;
-		//Log.e("X Accel Value2", String.format("%d", c));
 		signal[4] = (byte)c;
-		//Log.e("Y Accel Value2", String.format("%d", d));
 		signal[5] = (byte)d;
 
 		try {

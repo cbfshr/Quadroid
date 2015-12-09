@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
+		// Set up the Arduino Accessory
 		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -81,10 +82,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	public void onResume() {
 		super.onResume();
 
+		// Return if the streams are already initialized
 		if (mInputStream != null && mOutputStream != null) {
 			return;
 		}
 
+		// Initialize the streams
 		UsbAccessory[] accessories = mUsbManager.getAccessoryList();
 		UsbAccessory accessory = (accessories == null ? null : accessories[0]);
 		if (accessory != null) {
@@ -175,10 +178,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		}
 	}
 
+	// Returns the output stream
+	// This is used so that the fragments can retrieve the output stream and
+	// communicate with the Arduino.
 	public FileOutputStream getOutputStream() {
 		return mOutputStream;
 	}
 
+	// Determines the name of the title for each fragment
 	public void onSectionAttached(int number) {
 		switch (number) {
 			case 1:

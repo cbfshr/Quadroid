@@ -34,6 +34,8 @@ void setup() {
 
   delay(1000);
 }
+
+// Set up the output pins
 void initValues() {
   pinMode(THRUST_OUTPUT_PIN, OUTPUT);
   pinMode(YAW_OUTPUT_PIN, OUTPUT);
@@ -41,6 +43,7 @@ void initValues() {
   pinMode(PITCH_OUTPUT_PIN, OUTPUT);
 }
 
+// NOT USED
 // The startup protocol should be callled when a button is pressed.
 // That way, the application is already connected to the Arduino.
 void startupProtocol() {
@@ -77,32 +80,33 @@ void loop() {
       }
 
       // YAW
+      // Only yaw if the joystick value is not in the middle
       if((int)msg[0] < 35) {
-        analogWrite(YAW_OUTPUT_PIN, 3);
+        analogWrite(YAW_OUTPUT_PIN, 3); // RIGHT
       } else if((int)msg[0] > 65) {
-        analogWrite(YAW_OUTPUT_PIN, 255);        
+        analogWrite(YAW_OUTPUT_PIN, 255); // LEFT 
       } else {
-        analogWrite(YAW_OUTPUT_PIN, 40);
+        analogWrite(YAW_OUTPUT_PIN, 40); // MIDDLE
       }
 
       // ROLL
+      // If msg[2] is 101, then use the value at msg[4] (x accelerometer value)
       if((int)msg[2] == 101) {
         roll = normalizeRollAccel((int)msg[4]);
-        analogWrite(ROLL_OUTPUT_PIN, roll);
       } else {
         roll = normalizeRoll((int)msg[2]);
-        analogWrite(ROLL_OUTPUT_PIN, roll);
       }
+      analogWrite(ROLL_OUTPUT_PIN, roll);
 
       // PITCH
+      // If msg[3] is 101, then use the value at msg[5] (Y accelerometer value)
       if((int)msg[3] == 101) {
         pitch = normalizePitchAccel((int)msg[5]);
         //analogWrite(ROLL_OUTPUT_PIN, pitch);
-        analogWrite(PITCH_OUTPUT_PIN, pitch);
       } else {
         pitch = normalizePitch((int)msg[3]);
-        analogWrite(PITCH_OUTPUT_PIN, pitch);
       }
+      analogWrite(PITCH_OUTPUT_PIN, pitch);
     }
   }
 }
@@ -226,24 +230,4 @@ int normalizePitch(int rollValue) {
     return 255;
   }
 }
-
-/*void debugValues(int yaw, int thrust, int roll, pitch) {
-  Serial.print("Yaw: ");
-  Serial.print(yaw);
-  Serial.print('\n');
-
-  Serial.print("Thrust: ");
-  Serial.print(yaw);
-  Serial.print('\n');
-
-  Serial.print("Roll: ");
-  Serial.print(yaw);
-  Serial.print('\n');
-
-  Serial.print("Pitch: ");
-  Serial.print(yaw);
-  Serial.print('\n');
-  
-  Serial.print('\n');
-}*/
 
