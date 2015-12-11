@@ -170,11 +170,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						.replace(R.id.container, AccelerometerControlFragment.newInstance(position + 1))
 						.commit();
 				break;
-			case(2):
-				fragmentManager.beginTransaction()
-						.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-						.commit();
-				break;
 		}
 	}
 
@@ -193,9 +188,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 				break;
 			case 2:
 				mTitle = "Quadroid - " +getString(R.string.title_controls_accelerometer);
-				break;
-			case 3:
-				mTitle = "Quadroid - " +getString(R.string.title_about);
 				break;
 		}
 	}
@@ -262,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_about, container, false);
+			View rootView = inflater.inflate(R.layout.activity_main, container, false);
 			return rootView;
 		}
 

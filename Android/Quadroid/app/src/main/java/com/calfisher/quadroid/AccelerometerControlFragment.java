@@ -309,6 +309,19 @@ public class AccelerometerControlFragment extends Fragment implements SensorEven
 	// Sends the joystick values in the form of a byte array to the Arduino.
 	// The values are between 0-100 (Ratio value * 100)
 	private void sendControlValues(int a, int b, int c, int d) {
+		if(a < 0){
+			a = 0;
+		}
+		if(b < 0){
+			b = 0;
+		}
+		if(c < 0){
+			c = 0;
+		}
+		if(d < 0){
+			d = 0;
+		}
+
 		byte[] signal = new byte[6];
 		signal[0] = (byte)a;
 		signal[1] = (byte)b;

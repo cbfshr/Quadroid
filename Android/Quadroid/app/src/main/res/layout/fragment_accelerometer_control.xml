@@ -5,6 +5,7 @@
 			 tools:context="com.calfisher.quadroid.AccelerometerControlFragment">
 
 	<LinearLayout
+		android:id="@+id/joystick_values"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
@@ -48,11 +49,7 @@
 		android:src="@drawable/circle2"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:scaleType="fitXY"
-		android:layout_marginBottom="0dp"
-		android:gravity="bottom|center_horizontal"
-		android:paddingBottom="0dp"/>
+		android:layout_below="@id/joystick_values"/>
 	<ImageView
 		android:id="@+id/left_joystick_indicator"
 		android:layout_width="wrap_content"
